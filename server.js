@@ -47,6 +47,6 @@ mongoose.connect(dbUrl, { useNewUrlParser: true, useUnifiedTopology: true }, (er
 	console.log('mongo db connection: success');
 
 	const server = http.listen(process.env.PORT || port, () => {
-		console.log(`Listening on port ${server.address().port}...`);
+		console.log(`Listening at http://localhost:${server.address().port}...`);
 	});
 });
