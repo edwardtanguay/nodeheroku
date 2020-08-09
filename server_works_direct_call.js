@@ -7,9 +7,9 @@ const http = require('http').Server(app);
 const io = require('socket.io')(http);
 const port = 3001;
 
-// app.use(express.static(__dirname));
-// app.use(bodyParser.json());
-// app.use(bodyParser.urlencoded({ extended: false }));
+app.use(express.static(__dirname));
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: false }));
 
 const dbUrl = `mongodb+srv://learn:go2goTime@cluster0.hqjr5.mongodb.net/nodebasics?retryWrites=true&w=majority`;
 
@@ -20,16 +20,32 @@ const Message = mongoose.model('Message', {
 	text: String
 });
 
+console.log('11');
+Message.find({}, (err, messages) => {
+	console.log(messages);
+});
 
-app.get('/', (req, res) => {
-
-	console.log('here');
+app.get('/messages', (req, res) => {
 	Message.find({}, (err, messages) => {
-		console.log(messages[0]);
-		res.send(messages[0].name);
+		res.send(messages);
 	});
 });
 
+app.post('/messages', (req, res) => {
+	const message = new Message(req.body);
+	message.save((err) => {
+		if (err) {
+			sendStatus(500);
+		} else {
+			io.emit('message', req.body);
+			res.sendStatus(200);
+		}
+	});
+});
+
+io.on('connection', (socket) => {
+	console.log('a user connected');
+});
 
 mongoose.connect(dbUrl, { useNewUrlParser: true, useUnifiedTopology: true }, (err) => {
 	if (err) {
