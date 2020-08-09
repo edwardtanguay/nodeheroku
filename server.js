@@ -7,29 +7,18 @@ const http = require('http').Server(app);
 const io = require('socket.io')(http);
 const port = 3001;
 
-// app.use(express.static(__dirname));
-// app.use(bodyParser.json());
-// app.use(bodyParser.urlencoded({ extended: false }));
-
 const dbUrl = `mongodb+srv://learn:go2goTime@cluster0.hqjr5.mongodb.net/nodebasics?retryWrites=true&w=majority`;
-
-
 
 const Message = mongoose.model('Message', {
 	name: String,
 	text: String
 });
 
-
 app.get('/', (req, res) => {
-
-	console.log('here');
 	Message.find({}, (err, messages) => {
-		console.log(messages[0]);
-		res.send(messages[0].name);
+		res.send(messages.map(m => m.name).join(', '));
 	});
 });
-
 
 mongoose.connect(dbUrl, { useNewUrlParser: true, useUnifiedTopology: true }, (err) => {
 	if (err) {
